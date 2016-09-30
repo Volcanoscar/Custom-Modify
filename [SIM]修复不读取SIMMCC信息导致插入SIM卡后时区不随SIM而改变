@@ -1,0 +1,65 @@
+From 239fe956043b73d29f591d86d27eaade009dd70e Mon Sep 17 00:00:00 2001
+From: chehongbin <chehongbin@hkzechin.com>
+Date: Wed, 20 Jul 2016 16:18:06 +0800
+Subject: [PATCH] =?UTF-8?q?[POSH][SIM]=E4=BF=AE=E5=A4=8D=E4=B8=8D=E8=AF=BB?=
+ =?UTF-8?q?=E5=8F=96SIM=20MCC=E4=BF=A1=E6=81=AF=E5=AF=BC=E8=87=B4=E6=8F=92?=
+ =?UTF-8?q?=E5=85=A5SIM=E5=8D=A1=E5=90=8E=E6=97=B6=E5=8C=BA=E4=B8=8D?=
+ =?UTF-8?q?=E9=9A=8FSIM=E8=80=8C=E6=94=B9=E5=8F=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../telephony/src/java/com/android/internal/telephony/MccTable.java  | 5 +++--
+ .../tedongle/src/java/com/android/internal/tedongle/MccTable.java    | 5 +++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/MccTable.java b/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/MccTable.java
+index 13ced10..9d633b4 100755
+--- a/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/MccTable.java
++++ b/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/MccTable.java
+@@ -99,7 +99,7 @@ public final class MccTable {
+         if (index < 0) {
+             return null;
+         } else {
+-             return null;//chb add for posh 
++            return sTable.get(index);
+         }
+     }
+ 
+@@ -140,7 +140,8 @@ public final class MccTable {
+      * Returns null if unavailable.
+      */
+     public static String defaultLanguageForMcc(int mcc) {
+-        MccEntry entry = entryForMcc(mcc);
++        //MccEntry entry = entryForMcc(mcc);
++		MccEntry entry = null;
+         if (entry == null) {
+             Slog.d(LOG_TAG, "defaultLanguageForMcc(" + mcc + "): no country for mcc");
+             return null;
+diff --git a/alps/vendor/mediatek/proprietary/frameworks/opt/tedongle/src/java/com/android/internal/tedongle/MccTable.java b/alps/vendor/mediatek/proprietary/frameworks/opt/tedongle/src/java/com/android/internal/tedongle/MccTable.java
+index 8f6fa47..d95f737 100755
+--- a/alps/vendor/mediatek/proprietary/frameworks/opt/tedongle/src/java/com/android/internal/tedongle/MccTable.java
++++ b/alps/vendor/mediatek/proprietary/frameworks/opt/tedongle/src/java/com/android/internal/tedongle/MccTable.java
+@@ -75,7 +75,7 @@ public final class MccTable {
+         if (index < 0) {
+             return null;
+         } else {
+-            return null;//chb add for posh 
++            return sTable.get(index);
+         }
+     }
+ 
+@@ -116,7 +116,8 @@ public final class MccTable {
+      * Returns null if unavailable.
+      */
+     public static String defaultLanguageForMcc(int mcc) {
+-        MccEntry entry = entryForMcc(mcc);
++        //MccEntry entry = entryForMcc(mcc);
++        MccEntry entry = null
+         if (entry == null) {
+             Slog.d(LOG_TAG, "defaultLanguageForMcc(" + mcc + "): no country for mcc");
+             return null;
+-- 
+2.3.7
+

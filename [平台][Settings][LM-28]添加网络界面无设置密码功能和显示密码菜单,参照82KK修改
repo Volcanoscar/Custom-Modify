@@ -1,0 +1,53 @@
+From fe424fffdb18540afc8b5ffed01c63474903f4a8 Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Fri, 11 Mar 2016 17:49:51 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][Settings][LM-28]=E6=B7=BB?=
+ =?UTF-8?q?=E5=8A=A0=E7=BD=91=E7=BB=9C=E7=95=8C=E9=9D=A2=E6=97=A0=E8=AE=BE?=
+ =?UTF-8?q?=E7=BD=AE=E5=AF=86=E7=A0=81=E5=8A=9F=E8=83=BD=E5=92=8C=E6=98=BE?=
+ =?UTF-8?q?=E7=A4=BA=E5=AF=86=E7=A0=81=E8=8F=9C=E5=8D=95,=E5=8F=82?=
+ =?UTF-8?q?=E7=85=A782KK=E4=BF=AE=E6=94=B9?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../Settings/src/com/android/settings/wifi/WifiConfigController.java | 5 +++++
+ .../apps/Settings/src/com/mediatek/wifi/WifiConfigControllerExt.java | 2 ++
+ 2 files changed, 7 insertions(+)
+ mode change 100644 => 100755 alps/packages/apps/Settings/src/com/android/settings/wifi/WifiConfigController.java
+ mode change 100644 => 100755 alps/packages/apps/Settings/src/com/mediatek/wifi/WifiConfigControllerExt.java
+
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiConfigController.java b/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiConfigController.java
+old mode 100644
+new mode 100755
+index 8a241be..5429d69
+--- a/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiConfigController.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiConfigController.java
+@@ -1160,4 +1160,9 @@ public class WifiConfigController implements TextWatcher,
+         }
+     }
+     ///@}
++    /* zouguanbo 20150714 add begin for Jira GLTAG-2 from 82KK */
++  	public void setSecuritySpinner(Spinner mSecuritySpinner){
++  			this.mSecuritySpinner = mSecuritySpinner;
++  	}
++  	/* zouguanbo 20150714 add end for Jira GLTAG-2 from 82KK */
+ }
+diff --git a/alps/packages/apps/Settings/src/com/mediatek/wifi/WifiConfigControllerExt.java b/alps/packages/apps/Settings/src/com/mediatek/wifi/WifiConfigControllerExt.java
+old mode 100644
+new mode 100755
+index 325fab1..bf53e6d
+--- a/alps/packages/apps/Settings/src/com/mediatek/wifi/WifiConfigControllerExt.java
++++ b/alps/packages/apps/Settings/src/com/mediatek/wifi/WifiConfigControllerExt.java
+@@ -648,6 +648,8 @@ public class WifiConfigControllerExt {
+      * are configured
+      */
+     private void switchWlanSecuritySpinner(Spinner securitySpinner) {
++          /* zouguanbo 20150714 add for Jira GLTAG-2 from 82KK */
++          mController.setSecuritySpinner(securitySpinner);
+           ((Spinner) mView.findViewById(R.id.security)).setVisibility(View.GONE);
+           ((Spinner) mView.findViewById(R.id.wapi_security))
+                       .setVisibility(View.GONE);
+-- 
+2.3.7
+

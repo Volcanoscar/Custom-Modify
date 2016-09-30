@@ -1,0 +1,32 @@
+From 4e34c5e8c632acc7e5f7ca970a615ceac0b18387 Mon Sep 17 00:00:00 2001
+From: wujiao <wujiao@hkzechin.com>
+Date: Sat, 12 Mar 2016 11:11:50 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][Mms][AM-74]=E5=BD=A9?=
+ =?UTF-8?q?=E4=BF=A1=E6=B7=BB=E5=8A=A0AVI=E6=A0=BC=E5=BC=8F=E7=9A=84?=
+ =?UTF-8?q?=E6=94=AF=E6=8C=81?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../opt/telephony/src/java/com/google/android/mms/ContentType.java       | 1 +
+ 1 file changed, 1 insertion(+)
+ mode change 100644 => 100755 alps/frameworks/opt/telephony/src/java/com/google/android/mms/ContentType.java
+
+diff --git a/alps/frameworks/opt/telephony/src/java/com/google/android/mms/ContentType.java b/alps/frameworks/opt/telephony/src/java/com/google/android/mms/ContentType.java
+old mode 100644
+new mode 100755
+index 51e52be..560ac3c
+--- a/alps/frameworks/opt/telephony/src/java/com/google/android/mms/ContentType.java
++++ b/alps/frameworks/opt/telephony/src/java/com/google/android/mms/ContentType.java
+@@ -160,6 +160,7 @@ public class ContentType {
+         sSupportedVideoTypes.add(VIDEO_3G2);
+         sSupportedVideoTypes.add(VIDEO_H263);
+         sSupportedVideoTypes.add(VIDEO_MP4);
++	sSupportedVideoTypes.add("video/avi");//add for MMS PP-31
+     }
+ 
+     // This class should never be instantiated.
+-- 
+2.3.7
+

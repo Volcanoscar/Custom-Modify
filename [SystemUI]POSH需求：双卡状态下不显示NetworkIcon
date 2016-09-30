@@ -1,0 +1,105 @@
+From 88214ae3145cc2afb804cbbf611b2f90a894097a Mon Sep 17 00:00:00 2001
+From: chehongbin <chehongbin@hkzechin.com>
+Date: Fri, 8 Jul 2016 15:09:08 +0800
+Subject: [PATCH] =?UTF-8?q?[POSH][SystemUI]POSH=E9=9C=80=E6=B1=82=EF=BC=9A?=
+ =?UTF-8?q?=E5=8F=8C=E5=8D=A1=E7=8A=B6=E6=80=81=E4=B8=8B=E4=B8=8D=E6=98=BE?=
+ =?UTF-8?q?=E7=A4=BANetworkIcon?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../statusbar/policy/MobileSignalController.java   | 66 ++++++++++++++++++++--
+ 1 file changed, 60 insertions(+), 6 deletions(-)
+
+diff --git a/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java b/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+index 53243de..3b35985 100755
+--- a/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
++++ b/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/MobileSignalController.java
+@@ -57,6 +57,7 @@ import java.util.Objects;
+ //chb 20160705 add for posh show networkIcon when data connect
+ import android.net.ConnectivityManager;
+ import android.net.NetworkInfo;
++import android.os.SystemProperties;//chb 20160708 add for posh Dual SIM networktype Icon
+ 
+ 
+ public class MobileSignalController extends SignalController<
+@@ -524,16 +525,69 @@ public class MobileSignalController extends SignalController<
+         //chb 20160705 add for posh show networkIcon when data connect start 
+         ConnectivityManager  mConnectivityManager= (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+         boolean isGpsConnected = (mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED) ? true : false;
+-        if (isGpsConnected) {
+-            mCurrentState.networkIcon =
+-            NetworkTypeUtils.getNetworkTypeIcon(mServiceState, mConfig, hasService());
+-        } else{
+-            mCurrentState.networkIcon = 
+-            NetworkTypeUtils.getNetworkTypeIcon(mServiceState, mConfig, false);
++        TelephonyManager mGeminiPhone = (TelephonyManager) mContext.getSystemService("phone");
++        if (SystemProperties.get("ro.mtk_gemini_support").equals("1")){
++            int[] slotIds = getSlotIds();
++            int[] subIds = new int[slotIds.length];
++            for (int i = 0; i < slotIds.length; i++){
++                subIds[i] = getSubId(slotIds[i]);
++            }
++            String mGeminiSim1 = mGeminiPhone.getSimOperator(subIds[0]);
++            String mGeminiSim2 = mGeminiPhone.getSimOperator(subIds[1]);
++            boolean insertedDualSim = false;
++            if(((mGeminiSim1 !=null)&&!(mGeminiSim1.equals("")))&&((mGeminiSim2 != null)&&!(mGeminiSim2.equals("")))) {
++                insertedDualSim = true;
++            }
++            if(insertedDualSim){
++                //android.util.Log.d("chehongbin","1.insertedDualSim: "+insertedDualSim);
++                //android.util.Log.d("chehongbin","1.mGeminiSim1: "+mGeminiSim1);
++                //android.util.Log.d("chehongbin","1.mGeminiSim2: "+mGeminiSim2);
++                mCurrentState.networkIcon = 
++                    NetworkTypeUtils.getNetworkTypeIcon(mServiceState, mConfig, false);
++            }else {
++                //android.util.Log.d("chehongbin","2.insertedDualSim: "+insertedDualSim);
++                //android.util.Log.d("chehongbin","2.mGeminiSim1: "+mGeminiSim1);
++                //android.util.Log.d("chehongbin","2.mGeminiSim2: "+mGeminiSim2);
++                if (isGpsConnected) {
++                    mCurrentState.networkIcon =
++                    NetworkTypeUtils.getNetworkTypeIcon(mServiceState, mConfig, hasService());
++                } else{
++                    mCurrentState.networkIcon = 
++                        NetworkTypeUtils.getNetworkTypeIcon(mServiceState, mConfig, false);
++                }
++            }
++        }else {
++            if (isGpsConnected) {
++                mCurrentState.networkIcon =
++                NetworkTypeUtils.getNetworkTypeIcon(mServiceState, mConfig, hasService());
++            } else{
++                mCurrentState.networkIcon = 
++                    NetworkTypeUtils.getNetworkTypeIcon(mServiceState, mConfig, false);
++            }
+         }
++       
++        
+         //chb 20160705 add for posh show networkIcon when data connect end
+         notifyListenersIfNecessary();
+     }
++    //chb 20160708 add for posh  get insertedSimCount start 
++    public static int[] getSlotIds() {
++        int slotCount = TelephonyManager.getDefault().getPhoneCount();
++        int[] slotIds = new int[slotCount];
++        for (int i = 0; i < slotCount; i++) {
++            slotIds[i] = i;
++        }
++        return slotIds;
++    }
++    public static int getSubId(int slotId) {
++        int[] SubIds = SubscriptionManager.getSubId(slotId);
++        if (SubIds != null) {
++            return SubIds[0];
++        } else {
++            return -1;
++        }
++    }
++     //chb 20160708 add for posh  get insertedSimCount end 
+ 
+     @VisibleForTesting
+     void setActivity(int activity) {
+-- 
+2.3.7
+

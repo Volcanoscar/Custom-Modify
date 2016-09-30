@@ -1,0 +1,30 @@
+From f001f0b061efe1dd7edcc56474e0ed60c74a511d Mon Sep 17 00:00:00 2001
+From: wujiao <wujiao@hkzechin.com>
+Date: Fri, 11 Mar 2016 11:56:41 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][System][AM-2]=E4=BF=AE?=
+ =?UTF-8?q?=E6=94=B9=E9=80=89=E6=8B=A9=E5=85=B3=E6=9C=BA,=E4=B8=8D?=
+ =?UTF-8?q?=E5=BC=B9=E5=87=BA=E7=A1=AE=E8=AE=A4=E6=A1=86?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../services/core/java/com/android/server/policy/GlobalActions.java     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/alps/frameworks/base/services/core/java/com/android/server/policy/GlobalActions.java b/alps/frameworks/base/services/core/java/com/android/server/policy/GlobalActions.java
+index eac63b9..cd6ac6e 100755
+--- a/alps/frameworks/base/services/core/java/com/android/server/policy/GlobalActions.java
++++ b/alps/frameworks/base/services/core/java/com/android/server/policy/GlobalActions.java
+@@ -385,7 +385,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
+         @Override
+         public void onPress() {
+             // shutdown by making sure radio and power are handled accordingly.
+-            mWindowManagerFuncs.shutdown(false /* confirm */);
++            mWindowManagerFuncs.shutdown(true /* confirm */);//Tim modify for popup confirm dialog when power off
+         }
+     }
+ 
+-- 
+2.3.7
+

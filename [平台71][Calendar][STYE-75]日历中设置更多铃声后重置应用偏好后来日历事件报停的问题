@@ -1,0 +1,34 @@
+From 656dc11889e1466d32878228e0aca8272a0fb4f9 Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Tue, 27 Sep 2016 10:08:32 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B071][Calendar][STYE-75]?=
+ =?UTF-8?q?=E6=97=A5=E5=8E=86=E4=B8=AD=E8=AE=BE=E7=BD=AE=E6=9B=B4=E5=A4=9A?=
+ =?UTF-8?q?=E9=93=83=E5=A3=B0=E5=90=8E=E9=87=8D=E7=BD=AE=E5=BA=94=E7=94=A8?=
+ =?UTF-8?q?=E5=81=8F=E5=A5=BD=E5=90=8E=E6=9D=A5=E6=97=A5=E5=8E=86=E4=BA=8B?=
+ =?UTF-8?q?=E4=BB=B6=E6=8A=A5=E5=81=9C=E7=9A=84=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../packages/apps/Calendar/src/com/android/calendar/Utils.java        | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/alps/vendor/mediatek/proprietary/packages/apps/Calendar/src/com/android/calendar/Utils.java b/alps/vendor/mediatek/proprietary/packages/apps/Calendar/src/com/android/calendar/Utils.java
+index 69d6652..f3ddff0 100755
+--- a/alps/vendor/mediatek/proprietary/packages/apps/Calendar/src/com/android/calendar/Utils.java
++++ b/alps/vendor/mediatek/proprietary/packages/apps/Calendar/src/com/android/calendar/Utils.java
+@@ -441,7 +441,9 @@ public class Utils {
+             setRingTonePreference(context, ringtone);
+         /*hetian modify begin for PP-40 suportting the slient for ringtone 20150831*/
+         //} else if (!RingtoneManager.isRingtoneExist(context, Uri.parse(ringtone))) {
+-        } else if (!RingtoneManager.isRingtoneExist(context, Uri.parse(ringtone))&&!TextUtils.isEmpty(ringtone)) {
++        //zouguanbo 20160927 modify for Jria STYE-75 maybe don't have storrage permission
++        //} else if (!RingtoneManager.isRingtoneExist(context, Uri.parse(ringtone))&&!TextUtils.isEmpty(ringtone)) {
++        } else if (RingtoneManager.validRingtoneUri(context,Uri.parse(ringtone),RingtoneManager.TYPE_NOTIFICATION) == -1 && !TextUtils.isEmpty(ringtone)) {
+         /*hetian modify end for PP-40 suportting the slient for ringtone 20150831*/
+             /**M:check whether the ringtone exist. @{*/
+             Log.w(TAG, "ringtone is not exist. set a default one.");
+-- 
+2.3.7
+

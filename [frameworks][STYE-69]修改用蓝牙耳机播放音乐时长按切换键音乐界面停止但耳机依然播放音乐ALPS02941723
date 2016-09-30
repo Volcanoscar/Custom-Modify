@@ -1,0 +1,35 @@
+From 9ed71297046ad28f9b813ad5f0b04b0cc8fe9367 Mon Sep 17 00:00:00 2001
+From: gejianbo <gejianbo@hkzechin.com>
+Date: Fri, 23 Sep 2016 17:41:34 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B070][frameworks][STYE-69]?=
+ =?UTF-8?q?=E4=BF=AE=E6=94=B9=E7=94=A8=E8=93=9D=E7=89=99=E8=80=B3=E6=9C=BA?=
+ =?UTF-8?q?=E6=92=AD=E6=94=BE=E9=9F=B3=E4=B9=90=E6=97=B6=E9=95=BF=E6=8C=89?=
+ =?UTF-8?q?=E5=88=87=E6=8D=A2=E9=94=AE=E9=9F=B3=E4=B9=90=E7=95=8C=E9=9D=A2?=
+ =?UTF-8?q?=E5=81=9C=E6=AD=A2=E4=BD=86=E8=80=B3=E6=9C=BA=E4=BE=9D=E7=84=B6?=
+ =?UTF-8?q?=E6=92=AD=E6=94=BE=E9=9F=B3=E4=B9=90ALPS02941723?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ alps/frameworks/av/media/libmediaplayerservice/nuplayer/NuPlayer.cpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/alps/frameworks/av/media/libmediaplayerservice/nuplayer/NuPlayer.cpp b/alps/frameworks/av/media/libmediaplayerservice/nuplayer/NuPlayer.cpp
+index 5d88266..5394f06 100755
+--- a/alps/frameworks/av/media/libmediaplayerservice/nuplayer/NuPlayer.cpp
++++ b/alps/frameworks/av/media/libmediaplayerservice/nuplayer/NuPlayer.cpp
+@@ -2340,7 +2340,10 @@ void NuPlayer::performResumeDecoders(bool needNotify) {
+     }
+ 
+     if (mAudioDecoder != NULL) {
++		//jianbo.ge add 20160923 for mtk  ALPS02941723  jria STYE-69
++		if (mPlayState == PLAYING || mPlayState == PLAYSENDING){
+         mAudioDecoder->signalResume(false /* needNotify */);
++		}
+     }
+ }
+ 
+-- 
+2.3.7
+

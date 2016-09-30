@@ -1,0 +1,122 @@
+From 4a492c1318ceb6a1cb4d98badf981057a0700275 Mon Sep 17 00:00:00 2001
+From: chehongbin <chehongbin@hkzechin.com>
+Date: Mon, 25 Jul 2016 16:15:30 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B018][Settings]=E4=BF=AE?=
+ =?UTF-8?q?=E5=A4=8D=EF=BC=9A=E8=AE=BE=E7=BD=AE-=E5=BA=94=E7=94=A8-?=
+ =?UTF-8?q?=E5=8D=B8=E8=BD=BD=E6=8A=A5=E5=81=9C/=E8=AE=BE=E7=BD=AE-?=
+ =?UTF-8?q?=E5=AE=89=E5=85=A8-=E6=9C=89=E6=9D=83=E6=9F=A5=E7=9C=8B?=
+ =?UTF-8?q?=E4=BD=BF=E7=94=A8=E6=83=85=E5=86=B5=E7=9A=84=E5=BA=94=E7=94=A8?=
+ =?UTF-8?q?-=E5=8D=B8=E8=BD=BD=E6=8A=A5=E5=81=9C?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../src/com/android/settings/applications/AppInfoBase.java  |  2 +-
+ .../android/settings/applications/AppStateUsageBridge.java  |  0
+ .../android/settings/applications/DrawOverlayDetails.java   | 11 +++++++++++
+ .../android/settings/applications/InstalledAppDetails.java  |  8 +++++++-
+ .../android/settings/applications/UsageAccessDetails.java   | 13 ++++++++++++-
+ 5 files changed, 31 insertions(+), 3 deletions(-)
+ mode change 100644 => 100755 alps/packages/apps/Settings/src/com/android/settings/applications/AppInfoBase.java
+ mode change 100644 => 100755 alps/packages/apps/Settings/src/com/android/settings/applications/AppStateUsageBridge.java
+ mode change 100644 => 100755 alps/packages/apps/Settings/src/com/android/settings/applications/DrawOverlayDetails.java
+ mode change 100644 => 100755 alps/packages/apps/Settings/src/com/android/settings/applications/UsageAccessDetails.java
+
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/applications/AppInfoBase.java b/alps/packages/apps/Settings/src/com/android/settings/applications/AppInfoBase.java
+old mode 100644
+new mode 100755
+index 6085664..5cafd3c
+--- a/alps/packages/apps/Settings/src/com/android/settings/applications/AppInfoBase.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/applications/AppInfoBase.java
+@@ -133,7 +133,7 @@ public abstract class AppInfoBase extends SettingsPreferenceFragment
+                         PackageManager.GET_UNINSTALLED_PACKAGES |
+                         PackageManager.GET_SIGNATURES);
+             } catch (NameNotFoundException e) {
+-                Log.e(TAG, "Exception when retrieving package:" + mAppEntry.info.packageName, e);
++                //Log.e(TAG, "Exception when retrieving package:" + mAppEntry.info.packageName, e);
+             }
+         } else {
+             Log.w(TAG, "Missing AppEntry; maybe reinstalling?");
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/applications/AppStateUsageBridge.java b/alps/packages/apps/Settings/src/com/android/settings/applications/AppStateUsageBridge.java
+old mode 100644
+new mode 100755
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/applications/DrawOverlayDetails.java b/alps/packages/apps/Settings/src/com/android/settings/applications/DrawOverlayDetails.java
+old mode 100644
+new mode 100755
+index ef92c21..beb6fbc
+--- a/alps/packages/apps/Settings/src/com/android/settings/applications/DrawOverlayDetails.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/applications/DrawOverlayDetails.java
+@@ -138,6 +138,17 @@ public class DrawOverlayDetails extends AppInfoWithHeader implements OnPreferenc
+ 
+     @Override
+     protected boolean refreshUi() {
++        //chb 20160725 add for posh COPPLE-17 start 
++        PackageManager packageManager = getActivity().getPackageManager();
++        try {
++            ApplicationInfo appInfo = packageManager.getApplicationInfo(mPackageName, 0);
++            if (appInfo==null){
++                return false;
++            }
++        } catch (PackageManager.NameNotFoundException e) {
++            return false;
++        }
++        //chb 20160725 add for posh COPPLE-17 start 
+         mOverlayState = mOverlayBridge.getOverlayInfo(mPackageName,
+                 mPackageInfo.applicationInfo.uid);
+ 
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/applications/InstalledAppDetails.java b/alps/packages/apps/Settings/src/com/android/settings/applications/InstalledAppDetails.java
+index a4bba71..accb639 100755
+--- a/alps/packages/apps/Settings/src/com/android/settings/applications/InstalledAppDetails.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/applications/InstalledAppDetails.java
+@@ -510,7 +510,13 @@ public class InstalledAppDetails extends AppInfoBase
+ 
+     @Override
+     protected boolean refreshUi() {
+-        retrieveAppEntry();
++        //chb 20160725 add for posh COPPLE-17 start 
++        try { 
++            retrieveAppEntry();}
++        catch (NullPointerException e){
++            return false;
++        }
++        //chb 20160725 add for posh COPPLE-17 start 
+         if (mAppEntry == null) {
+             return false; // onCreate must have failed, make sure to exit
+         }
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/applications/UsageAccessDetails.java b/alps/packages/apps/Settings/src/com/android/settings/applications/UsageAccessDetails.java
+old mode 100644
+new mode 100755
+index 7af1d9b..8cffa6f
+--- a/alps/packages/apps/Settings/src/com/android/settings/applications/UsageAccessDetails.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/applications/UsageAccessDetails.java
+@@ -36,7 +36,7 @@ import android.util.Log;
+ import com.android.internal.logging.MetricsLogger;
+ import com.android.settings.R;
+ import com.android.settings.applications.AppStateUsageBridge.UsageState;
+-
++import android.content.pm.ApplicationInfo;
+ public class UsageAccessDetails extends AppInfoWithHeader implements OnPreferenceChangeListener,
+         OnPreferenceClickListener {
+ 
+@@ -125,6 +125,17 @@ public class UsageAccessDetails extends AppInfoWithHeader implements OnPreferenc
+ 
+     @Override
+     protected boolean refreshUi() {
++        //chb 20160725 add for posh COPPLE-17 start 
++        PackageManager packageManager = getActivity().getPackageManager();
++        try {
++            ApplicationInfo appInfo = packageManager.getApplicationInfo(mPackageName, 0);
++            if (appInfo==null){
++                return false;
++            }
++        } catch (PackageManager.NameNotFoundException e) {
++            return false;
++        }
++        //chb 20160725 add for posh COPPLE-17 end
+         mUsageState = mUsageBridge.getUsageInfo(mPackageName,
+                 mPackageInfo.applicationInfo.uid);
+ 
+-- 
+2.3.7
+

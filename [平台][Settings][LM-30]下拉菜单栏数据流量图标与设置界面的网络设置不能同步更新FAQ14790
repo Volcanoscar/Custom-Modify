@@ -1,0 +1,105 @@
+From d8576f11d66f1629faeeee6453c84d8ec563c7a0 Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Sat, 12 Mar 2016 10:22:40 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][Settings][LM-30]=E4=B8=8B?=
+ =?UTF-8?q?=E6=8B=89=E8=8F=9C=E5=8D=95=E6=A0=8F=E6=95=B0=E6=8D=AE=E6=B5=81?=
+ =?UTF-8?q?=E9=87=8F=E5=9B=BE=E6=A0=87=E4=B8=8E=E8=AE=BE=E7=BD=AE=E7=95=8C?=
+ =?UTF-8?q?=E9=9D=A2=E7=9A=84=E7=BD=91=E7=BB=9C=E8=AE=BE=E7=BD=AE=E4=B8=8D?=
+ =?UTF-8?q?=E8=83=BD=E5=90=8C=E6=AD=A5=E6=9B=B4=E6=96=B0FAQ14790?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../src/com/android/settings/DataUsageSummary.java | 53 ++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+ mode change 100644 => 100755 alps/packages/apps/Settings/src/com/android/settings/DataUsageSummary.java
+
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/DataUsageSummary.java b/alps/packages/apps/Settings/src/com/android/settings/DataUsageSummary.java
+old mode 100644
+new mode 100755
+index 6a89625..3bf47a0
+--- a/alps/packages/apps/Settings/src/com/android/settings/DataUsageSummary.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/DataUsageSummary.java
+@@ -130,6 +130,12 @@ import android.widget.TabHost.TabContentFactory;
+ import android.widget.TabHost.TabSpec;
+ import android.widget.TabWidget;
+ import android.widget.TextView;
++/* zouguanbo 20150714 add begin for Jria LM-30 when data change updata page FAQ14790 */
++import android.database.ContentObserver;
++import android.os.Handler;
++import android.provider.Settings;
++import android.content.ContentResolver;
++/* zouguanbo 20150714 add end for Jria LM-30 when data change updata page FAQ14790 */
+ import android.widget.Toast;
+ 
+ import com.android.internal.logging.MetricsLogger;
+@@ -628,6 +634,13 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable
+         /// @}
+ 
+         Log.d(TAG, "onResume()... end");
++		/* zouguanbo 20150714 add begin for Jria LM-30 when data change updata page FAQ14790 */
++		if(mDataDefaultSimObserver != null) {
++        		mDataDefaultSimObserver.unregister();
++        }
++        mDataDefaultSimObserver = new DataDefaultSimObserver(new Handler(), getActivity());
++        mDataDefaultSimObserver.register();
++		/* zouguanbo 20150714 add end for Jria LM-30 when data change updata page FAQ14790 */
+     }
+ 
+     @Override
+@@ -3187,6 +3200,11 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable
+                 mOverviewAdapter.unbindOperaMaxLoader();
+             }
+             /// @}
++			/* zouguanbo 20150714 add begin for Jria LM-30 when data change updata page FAQ14790 */
++			if(mDataDefaultSimObserver != null) {
++				mDataDefaultSimObserver.unregister();
++			}
++			/* zouguanbo 20150714 add end for Jria LM-30 when data change updata page FAQ14790 */
+         }
+ 
+         /**
+@@ -3291,4 +3309,39 @@ public class DataUsageSummary extends HighlightingFragment implements Indexable
+         return action.equals(TelephonyIntents.ACTION_SET_RADIO_CAPABILITY_DONE) ||
+                action.equals(TelephonyIntents.ACTION_SET_RADIO_CAPABILITY_FAILED);
+     }
++	/* zouguanbo 20150714 add begin for Jria LM-30 when data change updata page FAQ14790 */
++    private class DataDefaultSimObserver extends ContentObserver{
++    		public DataDefaultSimObserver(Handler handler, Context context){
++    			 super(handler);
++    			 mResolver = context.getContentResolver();
++    		}
++    		public void register() {
++    			 String contentUri;
++    			 if(TelephonyManager.getDefault().getSimCount() == 1) {
++    			 		contentUri = Settings.Global.MOBILE_DATA;
++    			 }else {
++    			 		contentUri = Settings.Global.MOBILE_DATA + SubscriptionManager.getDefaultDataSubId();
++    			 }
++    			 mResolver.registerContentObserver(Settings.Global.getUriFor(contentUri), false, this);
++    		}
++    		public void unregister() {
++    				mResolver.unregisterContentObserver(this);
++    		}
++    		@Override
++    		public void onChange(boolean selfChange){
++    				Boolean dataEnabled = false;
++    				Log.d(TAG, "mDataDefaultSimObserver");
++    				if(TelephonyManager.getDefault().getSimCount() == 1) {
++    						dataEnabled = Settings.Global.getInt(mResolver, Settings.Global.MOBILE_DATA, 0) == 1;
++    				}else {
++    						dataEnabled = Settings.Global.getInt(mResolver, Settings.Global.MOBILE_DATA + SubscriptionManager.getDefaultDataSubId(),0) == 1;
++    				}
++    				Log.d(TAG, "mDataDefaultSimObserver dataEnabld =" + dataEnabled);
++    				setMobileDataEnabled(SubscriptionManager.getDefaultDataSubId(),dataEnabled );
++    				updatePolicy(false);
++    		}
++    }
++    private DataDefaultSimObserver mDataDefaultSimObserver;
++    protected ContentResolver mResolver;
++    /* zouguanbo 20150714 add end for Jria LM-30 when data change updata page FAQ14790 */
+ }
+-- 
+2.3.7
+

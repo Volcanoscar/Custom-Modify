@@ -1,0 +1,153 @@
+From 9f5446b1d579988cad6e29a2d33afabbc6f5ce34 Mon Sep 17 00:00:00 2001
+From: chehongbin <chehongbin@hkzechin.com>
+Date: Sat, 20 Aug 2016 10:19:30 +0800
+Subject: [PATCH] =?UTF-8?q?[POSH][Setting][XC-37]=E5=AD=98=E5=82=A8?=
+ =?UTF-8?q?=E8=AE=BE=E5=A4=87=E5=92=8CUSB=E6=98=BE=E7=A4=BA=E4=B8=8D?=
+ =?UTF-8?q?=E6=AD=A3=E7=A1=AE?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../apps/Settings/res/values-zh-rCN/strings.xml         |  2 +-
+ alps/packages/apps/Settings/res/values/strings.xml      |  2 +-
+ .../settings/deviceinfo/PrivateVolumeSettings.java      |  8 +++++++-
+ .../android/settings/deviceinfo/StorageSettings.java    | 15 ++++++++++++---
+ .../settings/deviceinfo/StorageVolumePreference.java    | 17 ++++++++++++++---
+ .../src/com/mediatek/filemanager/FileInfoAdapter.java   |  5 +++++
+ 6 files changed, 40 insertions(+), 9 deletions(-)
+ mode change 100644 => 100755 alps/packages/apps/Settings/src/com/android/settings/deviceinfo/PrivateVolumeSettings.java
+ mode change 100644 => 100755 alps/vendor/mediatek/proprietary/packages/apps/FileManager/src/com/mediatek/filemanager/FileInfoAdapter.java
+
+diff --git a/alps/packages/apps/Settings/res/values-zh-rCN/strings.xml b/alps/packages/apps/Settings/res/values-zh-rCN/strings.xml
+index 2b0e921..da956d8 100755
+--- a/alps/packages/apps/Settings/res/values-zh-rCN/strings.xml
++++ b/alps/packages/apps/Settings/res/values-zh-rCN/strings.xml
+@@ -1001,7 +1001,7 @@
+     <string name="storage_volume_summary" msgid="7023441974367853372">"已使用 <xliff:g id="USED">%1$s</xliff:g>（共 <xliff:g id="TOTAL">%2$s</xliff:g>）"</string>
+     <string name="storage_size_large" msgid="5691585991420946254">"<xliff:g id="NUMBER">^1</xliff:g>"<small><small>" <xliff:g id="UNIT">^2</xliff:g>"</small></small>""</string>
+     <string name="storage_volume_used" msgid="1303803057698959872">"（共 <xliff:g id="TOTAL">%1$s</xliff:g>）"</string>
+-    <string name="storage_volume_used_total" msgid="6113121714019000244">"共使用 <xliff:g id="TOTAL">%1$s</xliff:g>"</string>
++    <string name="storage_volume_used_total" msgid="6113121714019000244">"共可用 <xliff:g id="TOTAL">%1$s</xliff:g>"</string>
+     <string name="storage_mount_success" msgid="687641090137253647">"<xliff:g id="NAME">%1$s</xliff:g>已装载"</string>
+     <string name="storage_mount_failure" msgid="1042621107954547316">"无法装载<xliff:g id="NAME">%1$s</xliff:g>"</string>
+     <string name="storage_unmount_success" msgid="5737203344673441677">"<xliff:g id="NAME">%1$s</xliff:g>已安全弹出"</string>
+diff --git a/alps/packages/apps/Settings/res/values/strings.xml b/alps/packages/apps/Settings/res/values/strings.xml
+index 95856c6..c4229ef 100755
+--- a/alps/packages/apps/Settings/res/values/strings.xml
++++ b/alps/packages/apps/Settings/res/values/strings.xml
+@@ -2369,7 +2369,7 @@
+     <!-- Summary of a single storage volume total space. [CHAR LIMIT=48]-->
+     <string name="storage_volume_used">Used of <xliff:g id="total" example="32GB">%1$s</xliff:g></string>
+     <!-- Summary of a single storage volume total space. [CHAR LIMIT=48]-->
+-    <string name="storage_volume_used_total">Total used of <xliff:g id="total" example="32GB">%1$s</xliff:g></string>
++    <string name="storage_volume_used_total">Total Available of <xliff:g id="total" example="32GB">%1$s</xliff:g></string>
+ 
+     <!-- Toast informing that storage mount operation was successful. [CHAR LIMIT=64]-->
+     <string name="storage_mount_success"><xliff:g id="name" example="SD card">%1$s</xliff:g> is mounted</string>
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/PrivateVolumeSettings.java b/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/PrivateVolumeSettings.java
+old mode 100644
+new mode 100755
+index b82728a..2c3ca23
+--- a/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/PrivateVolumeSettings.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/PrivateVolumeSettings.java
+@@ -220,7 +220,13 @@ public class PrivateVolumeSettings extends SettingsPreferenceFragment {
+         }
+ 
+         final File file = mVolume.getPath();
+-        final long totalBytes = file.getTotalSpace();
++        //chb modify for XC-37 20160820 start 
++        //final long totalBytes = file.getTotalSpace();
++        long totalBytes = file.getTotalSpace();
++        if(mVolume.ID_PRIVATE_INTERNAL.equals(mVolume.id) || mVolume.ID_EMULATED_INTERNAL.equals(mVolume.id)){
++            totalBytes = (long)(4.75*1024*1024*1024);
++        }
++        //chb modify for XC-37 20160820 end
+         final long freeBytes = file.getFreeSpace();
+         final long usedBytes = totalBytes - freeBytes;
+ 
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/StorageSettings.java b/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/StorageSettings.java
+index 2f87881..23b64a8 100755
+--- a/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/StorageSettings.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/StorageSettings.java
+@@ -176,8 +176,17 @@ public class StorageSettings extends SettingsPreferenceFragment implements Index
+                         new StorageVolumePreference(context, vol, color));
+                 if (vol.isMountedReadable()) {
+                     final File path = vol.getPath();
+-                    privateUsedBytes += path.getTotalSpace() - path.getFreeSpace();
+-                    privateTotalBytes += path.getTotalSpace();
++                    //privateUsedBytes += path.getTotalSpace() - path.getFreeSpace();
++                    //privateTotalBytes += path.getTotalSpace();
++					//chb modify for XC-37 20160820 start 
++                    if(vol.ID_PRIVATE_INTERNAL.equals(vol.id) || vol.ID_EMULATED_INTERNAL.equals(vol.id)){
++                               privateUsedBytes += (long)(4.75*1024*1024*1024) - path.getFreeSpace();
++                               privateTotalBytes += (long)(4.75*1024*1024*1024);
++                    }else{
++                               privateUsedBytes += path.getTotalSpace() - path.getFreeSpace();
++                               privateTotalBytes += path.getTotalSpace();
++                    }
++                    //chb modify for XC-37 20160820 end 
+                 }
+             } else if (vol.getType() == VolumeInfo.TYPE_PUBLIC) {
+                 mExternalCategory.addPreference(
+@@ -221,7 +230,7 @@ public class StorageSettings extends SettingsPreferenceFragment implements Index
+         mInternalSummary.setTitle(TextUtils.expandTemplate(getText(R.string.storage_size_large),
+                 result.value, result.units));
+         mInternalSummary.setSummary(getString(R.string.storage_volume_used_total,
+-                /*Formatter.formatFileSize(context, privateTotalBytes)*/ "4.75GB"));
++                Formatter.formatFileSize(context, privateTotalBytes)));
+         Log.d("chehongbin","privateTotalBytes:"+Formatter.formatFileSize(context, privateTotalBytes));//chb add 
+ 
+         if (mInternalCategory.getPreferenceCount() > 0) {
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/StorageVolumePreference.java b/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/StorageVolumePreference.java
+index 41da94b..2c29550 100755
+--- a/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/StorageVolumePreference.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/deviceinfo/StorageVolumePreference.java
+@@ -68,12 +68,23 @@ public class StorageVolumePreference extends Preference {
+             // TODO: move statfs() to background thread
+             final File path = volume.getPath();
+             final long freeBytes = path.getFreeSpace();
+-            final long totalBytes = path.getTotalSpace();
++            //final long totalBytes = path.getTotalSpace();
++            //chb modify for XC-37 20160820 start 
++           
++			long totalBytes = path.getTotalSpace();
++            if(volume.ID_PRIVATE_INTERNAL.equals(volume.id) || volume.ID_EMULATED_INTERNAL.equals(volume.id)){
++                totalBytes = (long)(4.75*1024*1024*1024);
++            }
+             final long usedBytes = totalBytes - freeBytes;
+-
+             final String used = Formatter.formatFileSize(context, usedBytes);
+             final String total = Formatter.formatFileSize(context, totalBytes);
+-            setSummary(context.getString(R.string.storage_volume_summary, used, /*total*/ "4.75GB"));
++			/*String total = Formatter.formatFileSize(context, totalBytes);
++                        if(path.toString().equals("/data")){
++                total = "4.75GB";
++             }
++			*/
++            //chb modify for XC-37 20160820 end
++			setSummary(context.getString(R.string.storage_volume_summary, used, total));
+             if (totalBytes != 0) {
+                 mUsedPercent = (int) ((usedBytes * 100) / totalBytes);
+             }
+diff --git a/alps/vendor/mediatek/proprietary/packages/apps/FileManager/src/com/mediatek/filemanager/FileInfoAdapter.java b/alps/vendor/mediatek/proprietary/packages/apps/FileManager/src/com/mediatek/filemanager/FileInfoAdapter.java
+old mode 100644
+new mode 100755
+index 47b8813..e955b5e
+--- a/alps/vendor/mediatek/proprietary/packages/apps/FileManager/src/com/mediatek/filemanager/FileInfoAdapter.java
++++ b/alps/vendor/mediatek/proprietary/packages/apps/FileManager/src/com/mediatek/filemanager/FileInfoAdapter.java
+@@ -323,6 +323,11 @@ public class FileInfoAdapter extends BaseAdapter {
+                 String totalSpaces = FileUtils.sizeToString(MountPointManager.getInstance().getMountPointTotalSpace(fileInfo.getFileAbsolutePath()));
+                 LogUtils.d(TAG, "setSizeText, file name = " + fileInfo.getFileName()
+                         + ",file path = " + fileInfo.getFileAbsolutePath());
++                //chb modify for XC-37 20160820 start 
++                if(fileInfo.getFileAbsolutePath().equals("/storage/emulated/0")){
++                    totalSpaces = "4.75GB";
++                }
++                //chb modify for XC-37 20160820 end
+                 LogUtils.d(TAG, "setSizeText, freeSpace = " + MountPointManager.getInstance().getMountPointFreeSpace(fileInfo.getFileAbsolutePath()) + ",totalSpace = "
+                         + MountPointManager.getInstance().getMountPointTotalSpace(fileInfo.getFileAbsolutePath()));
+ 
+-- 
+2.3.7
+

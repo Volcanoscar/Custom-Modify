@@ -1,0 +1,38 @@
+From 37a10d1bdea7f685b0b3767bfff296d0509d05b6 Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Wed, 14 Sep 2016 14:43:36 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B065][services][XC-62]?=
+ =?UTF-8?q?=E5=8F=82=E7=85=A7nexus5=E9=BB=98=E8=AE=A4=E7=BB=99google?=
+ =?UTF-8?q?=E7=9B=B8=E5=86=8C=E8=AF=BB=E5=8F=96=E5=AD=98=E5=82=A8=E6=9D=83?=
+ =?UTF-8?q?=E9=99=90=E8=A7=A3=E5=86=B3=E6=9F=90=E4=BA=9B=E6=93=8D=E4=BD=9C?=
+ =?UTF-8?q?=E4=B8=8B=E6=8A=A5=E5=81=9C=E7=9A=84=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../java/com/android/server/pm/DefaultPermissionGrantPolicy.java  | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/alps/frameworks/base/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java b/alps/frameworks/base/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java
+index e6a3fc5..9d1caa7 100755
+--- a/alps/frameworks/base/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java
++++ b/alps/frameworks/base/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java
+@@ -610,6 +610,14 @@ final class DefaultPermissionGrantPolicy {
+             						e.printStackTrace();
+             				}
+             		}
++            		//zouguanbo add end for Jria XC-62 add storage permissions for google photos
++            		if("com.google.android.apps.photos".equals(app.packageName)&& doesPackageSupportRuntimePermissions(pkgName)){
++            				try{
++            						grantRuntimePermissionsLPw(pkgName,STORAGE_PERMISSIONS,userId);
++            				}catch(Exception e){
++            						e.printStackTrace();
++            				}
++            		}
+             }
+             /* zouguanbo add end for Jria ENXID-37 add storage permissions for google music  */
+ 
+-- 
+2.3.7
+

@@ -1,0 +1,31 @@
+From 53c0542fe6e7f23002418d6da61e7573759dc56e Mon Sep 17 00:00:00 2001
+From: liubinyang <liubinyang@hkzechin.com>
+Date: Thu, 9 Jul 2015 15:54:58 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][SystemUI]12=E5=B0=8F?=
+ =?UTF-8?q?=E6=97=B6=E5=88=B6=E7=8A=B6=E6=80=81=E6=A0=8F=E6=97=B6=E9=97=B4?=
+ =?UTF-8?q?=E5=8A=A0=E4=B8=8AAM/PM=E6=98=BE=E7=A4=BA?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../SystemUI/src/com/android/systemui/statusbar/policy/Clock.java      | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java b/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java
+index d3ace32..ef8360e 100644
+--- a/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java
++++ b/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java
+@@ -79,7 +79,8 @@ public class Clock extends TextView implements DemoMode {
+                 R.styleable.Clock,
+                 0, 0);
+         try {
+-            mAmPmStyle = a.getInt(R.styleable.Clock_amPmStyle, AM_PM_STYLE_GONE);
++            //mAmPmStyle = a.getInt(R.styleable.Clock_amPmStyle, AM_PM_STYLE_GONE);
++	    mAmPmStyle = AM_PM_STYLE_NORMAL;//@darren 20150709 add for format12 add AM/PM
+         } finally {
+             a.recycle();
+         }
+-- 
+2.3.7
+

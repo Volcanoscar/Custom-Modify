@@ -1,0 +1,109 @@
+From 5313a90493722299f4f4ea786e6520d0d27cbd23 Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Fri, 11 Mar 2016 16:21:39 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][MediaProvider]=E8=A7=A3?=
+ =?UTF-8?q?=E5=86=B3=E5=90=8E=E5=8F=B0=E6=92=AD=E6=94=BE=E9=9F=B3=E4=B9=90?=
+ =?UTF-8?q?=EF=BC=8C=E9=A2=84=E5=90=AC=E9=93=83=E5=A3=B0=E6=97=B6=E5=90=8C?=
+ =?UTF-8?q?=E6=97=B6=E6=92=AD=E6=94=BE,=E5=8F=82=E8=80=83FAQ14531?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../providers/media/RingtonePickerActivity.java    | 48 +++++++++++++++++++++-
+ 1 file changed, 47 insertions(+), 1 deletion(-)
+ mode change 100644 => 100755 alps/packages/providers/MediaProvider/src/com/android/providers/media/RingtonePickerActivity.java
+
+diff --git a/alps/packages/providers/MediaProvider/src/com/android/providers/media/RingtonePickerActivity.java b/alps/packages/providers/MediaProvider/src/com/android/providers/media/RingtonePickerActivity.java
+old mode 100644
+new mode 100755
+index 555b0f2..68722fe
+--- a/alps/packages/providers/MediaProvider/src/com/android/providers/media/RingtonePickerActivity.java
++++ b/alps/packages/providers/MediaProvider/src/com/android/providers/media/RingtonePickerActivity.java
+@@ -42,6 +42,11 @@ import android.widget.ListAdapter;
+ import android.widget.ListView;
+ import android.widget.SimpleCursorAdapter;
+ import android.widget.TextView;
++/* zouguanbo 20150722 add begin for when picker ring stop music FAQ14531 */
++import android.media.AudioManager; 
++import android.content.Context;
++import android.media.AudioManager.OnAudioFocusChangeListener;
++/* zouguanbo 20150722 add end for when picker ring stop music FAQ14531 */
+ 
+ import com.android.internal.app.AlertActivity;
+ import com.android.internal.app.AlertController;
+@@ -132,6 +137,10 @@ public final class RingtonePickerActivity extends AlertActivity implements
+      * can be stopped later, after the activity is recreated.
+      */
+     private static Ringtone sPlayingRingtone;
++    /* zouguanbo 20150722 add begin for when picker ring stop music FAQ14531 */
++    private AudioManager mAudioManager = null;
++    private boolean mGetFocus = false; 
++    /* zouguanbo 20150722 add end for when picker ring stop music FAQ14531 */
+ 
+     private DialogInterface.OnClickListener mRingtoneClickListener =
+             new DialogInterface.OnClickListener() {
+@@ -188,6 +197,8 @@ public final class RingtonePickerActivity extends AlertActivity implements
+         }
+         // Get whether to show the 'Silent' item
+         mHasSilentItem = intent.getBooleanExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
++		/* zouguanbo 20150722 add for when picker ring stop music FAQ14531 */
++        mAudioManager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
+         // AudioAttributes flags
+         mAttributesFlags |= intent.getIntExtra(
+                 RingtoneManager.EXTRA_RINGTONE_AUDIO_ATTRIBUTES_FLAGS,
+@@ -430,7 +441,17 @@ public final class RingtonePickerActivity extends AlertActivity implements
+         }
+ 
+         if (ringtone != null) {
+-            if (mAttributesFlags != 0) {
++            /* zouguanbo 20150722 add begin for when picker ring stop music FAQ14531 */
++			int result=mAudioManager.requestAudioFocus(null, AudioManager.STREAM_RING, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
++            if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
++            		MtkLog.d(TAG, " request audio focus fail");
++            		mGetFocus = false;
++            } else {
++            		MtkLog.d(TAG, " request audio focus success");
++            		mGetFocus = true;
++            }
++			/* zouguanbo 20150722 add end for when picker ring stop music FAQ14531 */
++			if (mAttributesFlags != 0) {
+                 ringtone.setAudioAttributes(
+                         new AudioAttributes.Builder(ringtone.getAudioAttributes())
+                                 .setFlags(mAttributesFlags)
+@@ -482,7 +503,32 @@ public final class RingtonePickerActivity extends AlertActivity implements
+         if (mRingtoneManager != null) {
+             mRingtoneManager.stopPreviousRingtone();
+         }
++        /* zouguanbo 20150722 add begin for when picker ring stop music FAQ14531 */
++        if (mGetFocus && (null != mAudioManager) ) {
++        		if (AudioManager.AUDIOFOCUS_REQUEST_GRANTED == mAudioManager.abandonAudioFocus(null)) {
++        				MtkLog.d(TAG, "<abandonAudioFocus()> abandon audio focus success");
++        				mGetFocus = false;
++        		} else {
++        				MtkLog.d(TAG, "<abandonAudioFocus()> abandon audio focus failed");
++        				mGetFocus = true;
++        		}
++        }
++        /* zouguanbo 20150722 add end for when picker ring stop music FAQ14531 */
+     }
++    /* zouguanbo 20150722 add begin for when picker ring stop music FAQ14531 */
++    private OnAudioFocusChangeListener mAudioFocusListener = new OnAudioFocusChangeListener() {
++    		public void onAudioFocusChange(int focusChange) {
++    				MtkLog.d(TAG, "onAudioFocusChange:" + focusChange );
++    				switch (focusChange) {
++    						case AudioManager.AUDIOFOCUS_LOSS:
++    						case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
++    						case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
++    								stopAnyPlayingRingtone();
++    								break;
++    				}
++    		}
++    };
++    /* zouguanbo 20150722 add end for when picker ring stop music FAQ14531 */
+ 
+     private int getRingtoneManagerPosition(int listPos) {
+         return listPos - mStaticItemCount;
+-- 
+2.3.7
+

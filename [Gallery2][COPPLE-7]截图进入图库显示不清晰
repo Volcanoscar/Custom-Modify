@@ -1,0 +1,115 @@
+From 31de3ae19acd9a0844a728612cd91e90485c8172 Mon Sep 17 00:00:00 2001
+From: chehongbin <chehongbin@hkzechin.com>
+Date: Sat, 23 Jul 2016 11:46:12 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B017][Gallery2][COPPLE-7]?=
+ =?UTF-8?q?=E6=88=AA=E5=9B=BE=E8=BF=9B=E5=85=A5=E5=9B=BE=E5=BA=93=E6=98=BE?=
+ =?UTF-8?q?=E7=A4=BA=E4=B8=8D=E6=B8=85=E6=99=B0?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../android/gallery3d/data/ImageCacheRequest.java  | 36 ++++++++++++++++++++++
+ .../src/com/android/gallery3d/data/LocalImage.java | 10 +++++-
+ 2 files changed, 45 insertions(+), 1 deletion(-)
+
+diff --git a/alps/packages/apps/Gallery2/src/com/android/gallery3d/data/ImageCacheRequest.java b/alps/packages/apps/Gallery2/src/com/android/gallery3d/data/ImageCacheRequest.java
+index 6620f80..7bde0c7 100755
+--- a/alps/packages/apps/Gallery2/src/com/android/gallery3d/data/ImageCacheRequest.java
++++ b/alps/packages/apps/Gallery2/src/com/android/gallery3d/data/ImageCacheRequest.java
+@@ -25,6 +25,8 @@ import android.graphics.Bitmap;
+ import android.graphics.BitmapFactory;
+ import android.util.Log;
+ 
++/* zouguanbo 20160723 add for Jria COPPLE-7 for screen shot from 37M */
++import com.android.gallery3d.R;
+ import com.android.gallery3d.app.GalleryApp;
+ import com.android.gallery3d.common.BitmapUtils;
+ import com.android.gallery3d.data.BytesBufferPool.BytesBuffer;
+@@ -307,6 +309,13 @@ abstract class ImageCacheRequest implements Job<Bitmap> {
+         int rotation = data.mediaType == MediaType.VIDEO ?
+                 ((LocalVideo) item).getOrientation() : item.getRotation();
+ 
++        /* zouguanbo 20160723 add begin for Jria COPPLE-7 for screen shot from 37M */
++		if (isScreenShotCover(mApplication, data, item.getPath())) {
++            Log.d(TAG, "<resizeAndCropFancyThumbnail> ScreenShotCover");
++            return bitmap;
++        }
++		/* zouguanbo 20160723 add end for Jria COPPLE-7 for screen shot from 37M */
++
+         boolean isCameraRollCover = isCameraRollCover(mApplication, data, item.getPath());
+         int screenWidth = FancyHelper.getScreenWidthAtFancyMode();
+         if (isCameraRollCover) {
+@@ -404,6 +413,33 @@ abstract class ImageCacheRequest implements Job<Bitmap> {
+         }
+         return false;
+     }
++
++    /* zouguanbo 20160723 add begin for Jria COPPLE-7 for screen shot from 37M */
++	protected boolean isScreenShotCover(GalleryApp application, MediaData data, Path path) {
++        if (data == null) {
++            Log.d(TAG, "<isScreenShotCover> media data is null");
++            return false;
++        }
++        Path mediaSetPath = FancyHelper.getMediaSetPath(data);
++        MediaSet mediaSet = application.getDataManager().getMediaSet(mediaSetPath);
++        if (mediaSet == null) {
++            Log.d(TAG, "<isScreenShotCover> mediaSet is null");
++            return false;
++        }
++        String albumName = mediaSet.getName() != null ? mediaSet.getName() : "";
++        if (!albumName
++                .equals(application.getResources().getString(R.string.folder_screenshot))) {
++            return false;
++        }
++        if (mediaSet.getCoverMediaItem() != null
++                && mediaSet.getCoverMediaItem().getPath().equalsIgnoreCase(path.toString())
++                && data.mediaType != MediaType.CONTAINER) {
++            Log.d(TAG, "<isScreenShotCover> " + data.filePath + " is ScreenShotCover");
++            return true;
++        }
++        return false;
++    }
++	/* zouguanbo 20160723 add end for Jria COPPLE-7 for screen shot from 37M */
+     /// @}
+ 
+     ///M: add for Image DC  and PQ .
+diff --git a/alps/packages/apps/Gallery2/src/com/android/gallery3d/data/LocalImage.java b/alps/packages/apps/Gallery2/src/com/android/gallery3d/data/LocalImage.java
+index 5996e14..6587715 100755
+--- a/alps/packages/apps/Gallery2/src/com/android/gallery3d/data/LocalImage.java
++++ b/alps/packages/apps/Gallery2/src/com/android/gallery3d/data/LocalImage.java
+@@ -260,6 +260,8 @@ public class LocalImage extends LocalMediaItem {
+         private ExtItem mData;
+         private MediaData mMediaData;
+         private boolean mIsCameraRollCover;
++		/* zouguanbo 20160723 add for Jria COPPLE-7 for screen shot from 37M */
++        private boolean mIsScreenShotCover;
+ 
+         LocalImageRequest(GalleryApp application, Path path, long timeModified,
+                 int type, String localFilePath, String mimeType, ExtItem data,
+@@ -270,6 +272,8 @@ public class LocalImage extends LocalMediaItem {
+             mData = data;
+             mMediaData = mediaData;
+             mIsCameraRollCover = isCameraRollCover(application, mMediaData, path);
++            /* zouguanbo 20160723 add for Jria COPPLE-7 for screen shot from 37M */
++			mIsScreenShotCover = isScreenShotCover(application, mMediaData, path);
+         }
+         /// @}
+ 
+@@ -340,8 +344,12 @@ public class LocalImage extends LocalMediaItem {
+             /// M: [FEATURE.MODIFY] fancy layout @{
+             // return DecodeUtils.decodeThumbnail(jc, mLocalFilePath, options, targetSize, type);
+             if (type == MediaItem.TYPE_FANCYTHUMBNAIL) {
+-                if (mIsCameraRollCover) {
++                /* zouguanbo 20160723 modify for Jria COPPLE-7 for screen shot from 37M */
++				//if (mIsCameraRollCover) {
++				if (mIsCameraRollCover || mIsScreenShotCover) {
+                     targetSize = FancyHelper.getScreenWidthAtFancyMode();
++                    Log.d(TAG, "<onDecodeOri> "
++                            + "mIsCameraRollCover or mIsScreenShotCover, targetSize " + targetSize);
+                 }
+                 res = FancyHelper.decodeThumbnail(jc, mLocalFilePath, options, targetSize, type);
+             } else {
+-- 
+2.3.7
+
