@@ -1,0 +1,94 @@
+From ee452ed4cd5bae5857b8340412a252f6dd790733 Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Mon, 20 Jun 2016 14:57:46 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][Dialer][DASHX-76]=E4=BF=AE?=
+ =?UTF-8?q?=E6=94=B9=E9=80=9A=E8=AF=9D=E8=AE=BE=E7=BD=AE=E4=B8=AD=E6=8B=A8?=
+ =?UTF-8?q?=E5=8F=B7=E9=94=AE=E7=9B=98=E6=8F=90=E7=A4=BA=E9=9F=B3=E4=B8=8E?=
+ =?UTF-8?q?=E8=AE=BE=E7=BD=AE=E4=B8=AD=E6=8B=A8=E5=8F=B7=E9=94=AE=E7=9B=98?=
+ =?UTF-8?q?=E8=A7=A6=E6=91=B8=E9=9F=B3=E6=95=88=E4=B8=8D=E5=90=8C=E6=AD=A5?=
+ =?UTF-8?q?=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../dialer/settings/SoundSettingsFragment.java     | 51 +++++++++++++++++++++-
+ 1 file changed, 49 insertions(+), 2 deletions(-)
+
+diff --git a/alps/packages/apps/Dialer/src/com/android/dialer/settings/SoundSettingsFragment.java b/alps/packages/apps/Dialer/src/com/android/dialer/settings/SoundSettingsFragment.java
+index 7c93dc0..8ba25d8 100755
+--- a/alps/packages/apps/Dialer/src/com/android/dialer/settings/SoundSettingsFragment.java
++++ b/alps/packages/apps/Dialer/src/com/android/dialer/settings/SoundSettingsFragment.java
+@@ -34,6 +34,11 @@ import android.telephony.CarrierConfigManager;
+ import android.telephony.TelephonyManager;
+ import android.view.MenuItem;
+ import android.widget.Toast;
++/* zouguanbo 20160620 add begin for Jria RX-35 listener DTMF tone change */
++import android.app.Activity;
++import android.database.ContentObserver;
++import com.mediatek.common.audioprofile.AudioProfileListener;
++/* zouguanbo 20160620 add end for Jria RX-35 listener DTMF tone change */
+ 
+ import com.android.contacts.common.util.PermissionsUtil;
+ import com.android.dialer.R;
+@@ -114,8 +119,15 @@ public class SoundSettingsFragment extends PreferenceFragment
+             mVibrateWhenRinging = null;
+         }
+ 
+-        mPlayDtmfTone.setOnPreferenceChangeListener(this);
+-        mPlayDtmfTone.setChecked(shouldPlayDtmfTone());
++        /* zouguanbo 20160620 modify begin for Jria RX-35 listener DTMF tone change */
++        if (mPlayDtmfTone != null) {
++            mPlayDtmfTone.setOnPreferenceChangeListener(this);
++            /// M: [ALPS01841736] add listener for DMTF change
++            getActivity().getContentResolver().registerContentObserver(Settings.System.getUriFor(
++                    Settings.System.DTMF_TONE_WHEN_DIALING), false, mDTMFObserver);
++            mPlayDtmfTone.setChecked(shouldPlayDtmfTone());
++        }
++        /* zouguanbo 20160620 modify end for Jria RX-35 listener DTMF tone change */
+ 
+         TelephonyManager telephonyManager =
+                 (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+@@ -284,4 +296,39 @@ public class SoundSettingsFragment extends PreferenceFragment
+         return configManager.getConfig().getBoolean(
+                 CarrierConfigManager.KEY_HIDE_CARRIER_NETWORK_SETTINGS_BOOL);
+     }
++    
++    /* zouguanbo 20160620 add begin for Jria RX-35 listener DTMF tone change */
++    /** M: [ALPS01841736] add listener for DTMF change @{ */
++    private DTMFObserver mDTMFObserver = new DTMFObserver();
++
++    private class DTMFObserver extends ContentObserver {
++
++        public DTMFObserver() {
++            super(new Handler());
++        }
++
++        @Override
++        public void onChange(boolean selfChange) {
++            super.onChange(selfChange);
++            Activity activity = getActivity();
++            if (activity != null) {
++                boolean dtmfToneEnabled = Settings.System.getInt(
++                        activity.getContentResolver(),
++                        Settings.System.DTMF_TONE_WHEN_DIALING, 1) == 1;
++                if(mPlayDtmfTone.isChecked() != dtmfToneEnabled) {
++                    mPlayDtmfTone.setChecked(dtmfToneEnabled);
++                }
++            }
++        }
++    }
++
++    @Override
++    public void onDestroy() {
++        if (mDTMFObserver != null) {
++            getActivity().getContentResolver().unregisterContentObserver(mDTMFObserver);
++        }
++        super.onDestroy();
++    }
++    /** @} */
++    /* zouguanbo 20160620 add end for Jria RX-35 listener DTMF tone change */
+ }
+-- 
+2.3.7
+

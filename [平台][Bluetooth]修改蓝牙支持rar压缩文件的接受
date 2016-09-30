@@ -1,0 +1,59 @@
+From d7495282b4d51b741fbc34a734d98424ff4a472a Mon Sep 17 00:00:00 2001
+From: hetian <hetian@hkzechin.com>
+Date: Fri, 31 Jul 2015 10:53:35 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][Bluetooth]=E4=BF=AE?=
+ =?UTF-8?q?=E6=94=B9=E8=93=9D=E7=89=99=E6=94=AF=E6=8C=81rar=E5=8E=8B?=
+ =?UTF-8?q?=E7=BC=A9=E6=96=87=E4=BB=B6=E7=9A=84=E6=8E=A5=E5=8F=97?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ alps/packages/apps/Bluetooth/AndroidManifest.xml                    | 6 ++++++
+ .../apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java     | 3 ++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+ mode change 100644 => 100755 alps/packages/apps/Bluetooth/AndroidManifest.xml
+
+diff --git a/alps/packages/apps/Bluetooth/AndroidManifest.xml b/alps/packages/apps/Bluetooth/AndroidManifest.xml
+old mode 100644
+new mode 100755
+index 962212e..41ada41
+--- a/alps/packages/apps/Bluetooth/AndroidManifest.xml
++++ b/alps/packages/apps/Bluetooth/AndroidManifest.xml
+@@ -158,6 +158,9 @@
+                 <data android:mimeType="text/html" />
+                 <data android:mimeType="text/xml" />
+                 <data android:mimeType="application/zip" />
++                <!--hetian 20150730 add for rar support start-->
++                <data android:mimeType="application/rar" />
++                <!--hetian 20150730 add for rar support end-->
+                 <data android:mimeType="application/vnd.ms-excel" />
+                 <data android:mimeType="application/msword" />
+                 <data android:mimeType="application/vnd.ms-powerpoint" />
+@@ -183,6 +186,9 @@
+                 <data android:mimeType="text/x-vcalendar" />
+                 <data android:mimeType="text/plain" />
+                 <data android:mimeType="application/zip" />
++                <!--hetian 20150730 add for rar support start-->
++                <data android:mimeType="application/rar" />
++                <!--hetian 20150730 add for rar support end-->
+                 <data android:mimeType="application/msword" />
+                 <data android:mimeType="application/vnd.ms-excel" />
+                 <data android:mimeType="application/vnd.ms-powerpoint" />
+diff --git a/alps/packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java b/alps/packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java
+index df280cd..cf1461e 100755
+--- a/alps/packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java
++++ b/alps/packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java
+@@ -234,7 +234,8 @@ public class Constants {
+         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+         "application/x-hwp",
+         "application/vnd.android.package-archive",
+-        "application/x-flac"//flac
++        "application/x-flac",//flac
++        "application/*"//hetian add for AL-59 20150730
+     };
+ 
+     /**
+-- 
+2.3.7
+

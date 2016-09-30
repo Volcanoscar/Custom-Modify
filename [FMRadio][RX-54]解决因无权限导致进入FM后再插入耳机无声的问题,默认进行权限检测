@@ -1,0 +1,156 @@
+From ebe4f7a69acb3865846c1f9b22afaa7ddf1b1431 Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Fri, 24 Jun 2016 11:12:58 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B03][FMRadio][RX-54]=E8=A7=A3?=
+ =?UTF-8?q?=E5=86=B3=E5=9B=A0=E6=97=A0=E6=9D=83=E9=99=90=E5=AF=BC=E8=87=B4?=
+ =?UTF-8?q?=E8=BF=9B=E5=85=A5FM=E5=90=8E=E5=86=8D=E6=8F=92=E5=85=A5?=
+ =?UTF-8?q?=E8=80=B3=E6=9C=BA=E6=97=A0=E5=A3=B0=E7=9A=84=E9=97=AE=E9=A2=98?=
+ =?UTF-8?q?,=E9=BB=98=E8=AE=A4=E8=BF=9B=E8=A1=8C=E6=9D=83=E9=99=90?=
+ =?UTF-8?q?=E6=A3=80=E6=B5=8B?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ alps/packages/apps/FMRadio/AndroidManifest.xml     |  2 +
+ .../src/com/android/fmradio/FmMainActivity.java    | 49 ++++++++++++++++++++--
+ .../FMRadio/src/com/android/fmradio/FmService.java | 18 +++++++-
+ 3 files changed, 64 insertions(+), 5 deletions(-)
+ mode change 100644 => 100755 alps/packages/apps/FMRadio/src/com/android/fmradio/FmMainActivity.java
+
+diff --git a/alps/packages/apps/FMRadio/AndroidManifest.xml b/alps/packages/apps/FMRadio/AndroidManifest.xml
+index b9f8004..285031f 100755
+--- a/alps/packages/apps/FMRadio/AndroidManifest.xml
++++ b/alps/packages/apps/FMRadio/AndroidManifest.xml
+@@ -39,6 +39,8 @@
+     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+     <uses-permission android:name="android.permission.WAKE_LOCK" />
+     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
++    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
++	
+     <!-- zouguanbo 20150208 add android.permission.WRITE_MEDIA_STORAGE for Jira AL-200 Add WRITE_MEDIA_STORAGE permissions -->
+     <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE"/>
+ 
+diff --git a/alps/packages/apps/FMRadio/src/com/android/fmradio/FmMainActivity.java b/alps/packages/apps/FMRadio/src/com/android/fmradio/FmMainActivity.java
+old mode 100644
+new mode 100755
+index af6620e..155e073
+--- a/alps/packages/apps/FMRadio/src/com/android/fmradio/FmMainActivity.java
++++ b/alps/packages/apps/FMRadio/src/com/android/fmradio/FmMainActivity.java
+@@ -81,9 +81,13 @@ public class FmMainActivity extends Activity implements FmFavoriteEditDialog.Edi
+ 
+     public static final int REQUEST_CODE_RECORDING = 2;
+ 
+-    private static final int PERMISSION_REQUEST_CODE_RECORDING = 100;
++    /* zouguanbo 20160624 modify begin for Jria RX-54 FM need permission */
++	private static final int PERMISSION_REQUEST_POWER_ON = 100;
+ 
+-    private static final int PERMISSION_REQUEST_CODE_SAVED_RECORDING = 101;
++    private static final int PERMISSION_REQUEST_CODE_RECORDING = 101;
++
++    private static final int PERMISSION_REQUEST_CODE_SAVED_RECORDING = 102;
++	/* zouguanbo 20160624 modify end for Jria RX-54 FM need permission */
+ 
+     // Extra for result of request REQUEST_CODE_RECORDING
+     public static final String EXTRA_RESULT_STRING = "result_string";
+@@ -1041,6 +1045,28 @@ public class FmMainActivity extends Activity implements FmFavoriteEditDialog.Edi
+         refreshActionMenuItem(false);
+         refreshPopupMenuItem(false);
+         refreshPlayButton(false);
++
++        /* zouguanbo 20160624 add begin for Jria RX-54 FM need permission */
++		if (!isAntennaAvailable()) {
++            Log.d(TAG, "powerUpFm: headset not present");
++            return;
++        }
++        int recordAudioPermission = checkSelfPermission(Manifest.permission.RECORD_AUDIO);
++        List<String> mPermissionStrings = new ArrayList<String>();
++        boolean mRequest = false;
++
++        if (recordAudioPermission != PackageManager.PERMISSION_GRANTED) {
++            mPermissionStrings.add(Manifest.permission.RECORD_AUDIO);
++            mRequest = true;
++        }
++        if (mRequest == true) {
++            String[] mPermissionList = new String[mPermissionStrings.size()];
++            mPermissionList = mPermissionStrings.toArray(mPermissionList);
++            requestPermissions(mPermissionList, PERMISSION_REQUEST_POWER_ON);
++            return;
++        }
++        mService.setRecordingPermission(true);
++		/* zouguanbo 20160624 add end for Jria RX-54 FM need permission */
+         mService.powerUpAsync(FmUtils.computeFrequency(mCurrentStation));
+     }
+ 
+@@ -1452,8 +1478,23 @@ public class FmMainActivity extends Activity implements FmFavoriteEditDialog.Edi
+             int[] grantResults) {
+         boolean granted = true;
+         boolean mShowPermission = true;
+-        if (requestCode == PERMISSION_REQUEST_CODE_RECORDING) {
+-
++        /* zouguanbo 20160624 modify begin for Jria RX-54 FM need permission */
++		if (requestCode == PERMISSION_REQUEST_POWER_ON) {
++            granted = (grantResults[0] == PackageManager.PERMISSION_GRANTED);
++            if (!granted) {
++                mShowPermission = shouldShowRequestPermissionRationale(permissions[0]);
++            }
++            Log.i(TAG, "<onRequestPermissionsResult> Power on fm granted" + granted);
++            if (granted == true) {
++                if (mService != null) {
++                    mService.setRecordingPermission(true);
++                }
++                powerUpFm();
++            } else if (!mShowPermission) {
++                showToast(getString(com.mediatek.internal.R.string.denied_required_permission));
++            }
++        } else if (requestCode == PERMISSION_REQUEST_CODE_RECORDING) {
++		/* zouguanbo 20160624 modify end for Jria RX-54 FM need permission */
+             for (int counter = 0; counter < permissions.length; counter++) {
+                 boolean permissionGranted = (grantResults[counter] ==
+                                              PackageManager.PERMISSION_GRANTED);
+diff --git a/alps/packages/apps/FMRadio/src/com/android/fmradio/FmService.java b/alps/packages/apps/FMRadio/src/com/android/fmradio/FmService.java
+index 5a6f4ea..7b40df1 100755
+--- a/alps/packages/apps/FMRadio/src/com/android/fmradio/FmService.java
++++ b/alps/packages/apps/FMRadio/src/com/android/fmradio/FmService.java
+@@ -173,6 +173,9 @@ public class FmService extends Service implements FmRecorder.OnRecorderStateChan
+     private boolean mIsFmFavoriteForeground = false;
+     // FmRecordActivity foreground
+     private boolean mIsFmRecordForeground = false;
++    /* zouguanbo 20160624 modify for Jria RX-54 FM need permission */
++	// Flag to check if recording permission is present
++    private boolean mIsRecordingPermissible = false;
+     // Instance variables
+     private Context mContext = null;
+     private AudioManager mAudioManager = null;
+@@ -291,7 +294,10 @@ public class FmService extends Service implements FmRecorder.OnRecorderStateChan
+                  */
+                 Log.d(TAG, "FmServiceBroadcastReceiver, mValueHeadSetPlug: "
+                             + mValueHeadSetPlug + "isActivityForeground:" + isActivityForeground());
+-                if ((0 == mValueHeadSetPlug) && isActivityForeground()) {
++                /* zouguanbo 20160624 modify for Jria RX-54 FM need permission */
++				//	if ((0 == mValueHeadSetPlug) && isActivityForeground()){
++				if ((0 == mValueHeadSetPlug) && isActivityForeground() &&
++                    mIsRecordingPermissible) {
+                     powerUpAsync(FmUtils.computeFrequency(mCurrentStation));
+                 } else if (1 == mValueHeadSetPlug) {
+                     mFmServiceHandler.removeMessages(FmListener.MSGID_SCAN_FINISHED);
+@@ -3231,6 +3237,16 @@ public class FmService extends Service implements FmRecorder.OnRecorderStateChan
+         mIsFmRecordForeground = isForeground;
+     }
+ 
++    /* zouguanbo 20160624 add begin for Jria RX-54 FM need permission */
++	/**
++     * mark recording permission
++     * @param isPermissionEnabled
++     */
++    public void setRecordingPermission(boolean isPermissionEnabled) {
++        mIsRecordingPermissible = isPermissionEnabled;
++    }
++	/* zouguanbo 20160624 add end for Jria RX-54 FM need permission */
++
+     /**
+      * Get the recording sdcard path when staring record
+      *
+-- 
+2.3.7
+

@@ -1,0 +1,34 @@
+From b06a375e1448cf3a4921b4914f69329132437c6e Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Mon, 13 Jun 2016 14:19:33 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][bt][DASH-45]=E8=93=9D?=
+ =?UTF-8?q?=E7=89=99=E6=90=9C=E7=B4=A2=E6=97=B6=E9=97=B4=E5=A4=AA=E7=9F=AD?=
+ =?UTF-8?q?=EF=BC=8C=E8=B0=83=E6=95=B4=E8=93=9D=E7=89=99=E6=90=9C=E7=B4=A2?=
+ =?UTF-8?q?=E6=97=B6=E9=97=B4FAQ17980?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ alps/system/bt/btif/src/btif_dm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ mode change 100644 => 100755 alps/system/bt/btif/src/btif_dm.c
+
+diff --git a/alps/system/bt/btif/src/btif_dm.c b/alps/system/bt/btif/src/btif_dm.c
+old mode 100644
+new mode 100755
+index f7b9ed4..6110940
+--- a/alps/system/bt/btif/src/btif_dm.c
++++ b/alps/system/bt/btif/src/btif_dm.c
+@@ -85,7 +85,7 @@ extern BOOLEAN bta_dm_mtk_is_device_blacklisted(BD_ADDR remote_bd_addr,const sta
+ 
+ 
+ #define BTIF_DM_DEFAULT_INQ_MAX_RESULTS     0
+-#define BTIF_DM_DEFAULT_INQ_MAX_DURATION    10
++#define BTIF_DM_DEFAULT_INQ_MAX_DURATION    40 /* zouguanbo 20160613 modify for DASH-45 10 to 40 from FAQ17980 */
+ #define BTIF_DM_MAX_SDP_ATTEMPTS_AFTER_PAIRING 2
+ 
+ #define NUM_TIMEOUT_RETRIES                 5
+-- 
+2.3.7
+

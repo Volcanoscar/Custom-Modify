@@ -1,0 +1,93 @@
+From e8b40bea87dc8232668bfa9187d56c5dfbc5af5f Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Thu, 28 Jul 2016 13:56:17 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B019][Launcher3]=E8=A7=A3?=
+ =?UTF-8?q?=E5=86=B3=E7=82=B9=E5=87=BB=E6=A1=8C=E9=9D=A2=E8=81=94=E7=B3=BB?=
+ =?UTF-8?q?=E4=BA=BA=E5=B0=8F=E9=83=A8=E4=BB=B6=E4=B8=8D=E8=83=BD=E7=9B=B4?=
+ =?UTF-8?q?=E6=8E=A5=E6=8B=A8=E6=89=93=E7=94=B5=E8=AF=9D=E7=9A=84=E9=97=AE?=
+ =?UTF-8?q?=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../src/com/android/launcher3/Launcher.java        | 42 ++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
+
+diff --git a/alps/packages/apps/Launcher3/src/com/android/launcher3/Launcher.java b/alps/packages/apps/Launcher3/src/com/android/launcher3/Launcher.java
+index 87b4693..00ad911 100755
+--- a/alps/packages/apps/Launcher3/src/com/android/launcher3/Launcher.java
++++ b/alps/packages/apps/Launcher3/src/com/android/launcher3/Launcher.java
+@@ -106,6 +106,8 @@ import android.widget.FrameLayout;
+ import android.widget.ImageView;
+ import android.widget.TextView;
+ import android.widget.Toast;
++//zouguanbo 20160728 add for click widget can't call phone
++import android.Manifest;
+ 
+ import com.android.launcher3.DropTarget.DragObject;
+ import com.android.launcher3.PagedView.PageSwitchListener;
+@@ -1000,6 +1002,35 @@ public class Launcher extends Activity
+     /** @Override for MNC */
+     public void onRequestPermissionsResult(int requestCode, String[] permissions,
+             int[] grantResults) {
++    		//zouguanbo 20160728 add begin for click widget can't call phone
++    		if(requestCode==MY_PERMISSIONS_REQUEST_CALL_PHONE){
++    				if(permissions[0].equals(Manifest.permission.CALL_PHONE)&&grantResults[0]==PackageManager.PERMISSION_GRANTED&&permissionV != null){
++    						Object tag = permissionV.getTag();
++    						final ShortcutInfo shortcut;
++    						final Intent intent;
++    						if (tag instanceof ShortcutInfo) {
++    								shortcut = (ShortcutInfo) tag;
++    								intent = shortcut.intent;
++    								int[] pos = new int[2];
++    								permissionV.getLocationOnScreen(pos);
++    								intent.setSourceBounds(new Rect(pos[0], pos[1],
++                    pos[0] + permissionV.getWidth(), pos[1] + permissionV.getHeight()));
++                } else if (tag instanceof AppInfo) {
++                		shortcut = null;
++                		intent = ((AppInfo) tag).intent;
++                } else {
++                		throw new IllegalArgumentException("Input must be a Shortcut or AppInfo");
++                }
++    						boolean success = startActivitySafely(permissionV, intent, tag);
++    						mStats.recordLaunch(permissionV, intent, shortcut);
++    						if (success && permissionV instanceof BubbleTextView) {
++    								mWaitingForResume = (BubbleTextView) permissionV;
++    								mWaitingForResume.setStayPressed(true);
++    						}
++    				}
++    		}
++    		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
++    		//zouguanbo 20160728 add end for click widget can't call phone
+         if (mLauncherCallbacks != null) {
+             mLauncherCallbacks.onRequestPermissionsResult(requestCode, permissions,
+                     grantResults);
+@@ -2966,6 +2997,10 @@ public class Launcher extends Activity
+             mLauncherCallbacks.onClickAppShortcut(v);
+         }
+     }
++    //zouguanbo 20160728 add begin for click widget can't call phone
++    public static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 101;
++    View permissionV;
++    //zouguanbo 20160728 add end for click widget can't call phone
+ 
+     @Thunk void startAppShortcutOrInfoActivity(View v) {
+         Object tag = v.getTag();
+@@ -2986,6 +3021,13 @@ public class Launcher extends Activity
+             throw new IllegalArgumentException("Input must be a Shortcut or AppInfo");
+         }
+ 
++        //zouguanbo 20160728 add begin for click widget can't call phone
++        if(intent.getAction() == Intent.ACTION_CALL && checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
++        		permissionV = v;
++        		requestPermissions(new String [] {Manifest.permission.CALL_PHONE}, MY_PERMISSIONS_REQUEST_CALL_PHONE);
++        		return;
++        }
++        //zouguanbo 20160728 add end for click widget can't call phone
+         boolean success = startActivitySafely(v, intent, tag);
+         mStats.recordLaunch(v, intent, shortcut);
+ 
+-- 
+2.3.7
+

@@ -1,0 +1,100 @@
+From e7aa6241cdca227e5e3ef663115fb4391876412b Mon Sep 17 00:00:00 2001
+From: wujiao <wujiao@hkzechin.com>
+Date: Mon, 9 May 2016 23:22:47 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][Deskclock][PP-175]Deskcloc?=
+ =?UTF-8?q?k=E6=A8=AA=E5=B1=8F=E7=9A=84=E6=97=B6=E5=80=99=E6=8C=89menu?=
+ =?UTF-8?q?=E9=94=AE=E6=98=BE=E7=A4=BA=E5=BC=82=E5=B8=B8?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../src/com/android/deskclock/DeskClock.java       | 70 +++++++++++-----------
+ 1 file changed, 35 insertions(+), 35 deletions(-)
+
+diff --git a/alps/packages/apps/DeskClock/src/com/android/deskclock/DeskClock.java b/alps/packages/apps/DeskClock/src/com/android/deskclock/DeskClock.java
+index 34677a0..6c7ccc3 100755
+--- a/alps/packages/apps/DeskClock/src/com/android/deskclock/DeskClock.java
++++ b/alps/packages/apps/DeskClock/src/com/android/deskclock/DeskClock.java
+@@ -130,43 +130,43 @@ public class DeskClock extends BaseActivity
+     }
+ 
+     /** M: @{ --Menu Key handling--  */
+-    public void showPopup(View v) {
+-        PopupMenu popup = new PopupMenu(this, v) {
+-            @Override
+-            public void show() {
+-                onPrepareOptionsMenu(getMenu());
+-                super.show();
+-            }
+-        };
+-        MenuInflater inflater = popup.getMenuInflater();
+-        inflater.inflate(R.menu.desk_clock_menu, popup.getMenu());
+-
+-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+-            @Override
+-            public boolean onMenuItemClick(MenuItem item) {
+-                return onOptionsItemSelected(item);
+-            }
+-        });
+-        popup.show();
+-    }
+-
+-    @Override
+-    public boolean onKeyUp(int keyCode, KeyEvent event) {
+-
+-        if (keyCode == KeyEvent.KEYCODE_MENU) {
++//    public void showPopup(View v) {
++//        PopupMenu popup = new PopupMenu(this, v) {
++//            @Override
++//            public void show() {
++//                onPrepareOptionsMenu(getMenu());
++//                super.show();
++//            }
++//        };
++//        MenuInflater inflater = popup.getMenuInflater();
++//        inflater.inflate(R.menu.desk_clock_menu, popup.getMenu());
++
++//        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
++//            @Override
++//            public boolean onMenuItemClick(MenuItem item) {
++//                return onOptionsItemSelected(item);
++//            }
++//        });
++//        popup.show();
++//    }
++
++//    @Override
++//    public boolean onKeyUp(int keyCode, KeyEvent event) {
++
++//        if (keyCode == KeyEvent.KEYCODE_MENU) {
+             /* Handle the menu key only for alarm and world clock */
+-            if (mMenu != null) {
++//            if (mMenu != null) {
+                 // Make sure the menu's been initialized.
+-                if (mSelectedTab == ALARM_TAB_INDEX
+-                        || mSelectedTab == CLOCK_TAB_INDEX) {
+-                    View menuButton = findViewById(R.id.menu_button);
+-                    showPopup(menuButton);
+-                }
+-            }
+-
+-        }
+-        return super.onKeyUp(keyCode, event);
+-    }
++//                if (mSelectedTab == ALARM_TAB_INDEX
++//                        || mSelectedTab == CLOCK_TAB_INDEX) {
++//                    View menuButton = findViewById(R.id.menu_button);
++//                    showPopup(menuButton);
++//                }
++//            }
++
++//        }
++//        return super.onKeyUp(keyCode, event);
++//    }
+ 
+     /** @} --Menu Key handling-- */
+ 
+-- 
+2.3.7
+

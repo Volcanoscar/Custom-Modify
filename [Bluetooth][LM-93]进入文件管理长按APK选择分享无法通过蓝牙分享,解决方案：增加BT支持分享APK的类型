@@ -1,0 +1,43 @@
+From 09741c3de314790722cd31112608b23cc78e3d9a Mon Sep 17 00:00:00 2001
+From: liubinyang <liubinyang@hkzechin.com>
+Date: Thu, 16 Jul 2015 15:16:00 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][Bluetooth][LM-93]=E8=BF=9B?=
+ =?UTF-8?q?=E5=85=A5=E6=96=87=E4=BB=B6=E7=AE=A1=E7=90=86=E9=95=BF=E6=8C=89?=
+ =?UTF-8?q?APK=E9=80=89=E6=8B=A9=E5=88=86=E4=BA=AB=E6=97=A0=E6=B3=95?=
+ =?UTF-8?q?=E9=80=9A=E8=BF=87=E8=93=9D=E7=89=99=E5=88=86=E4=BA=AB,?=
+ =?UTF-8?q?=E8=A7=A3=E5=86=B3=E6=96=B9=E6=A1=88=EF=BC=9A=E5=A2=9E=E5=8A=A0?=
+ =?UTF-8?q?BT=E6=94=AF=E6=8C=81=E5=88=86=E4=BA=ABAPK=E7=9A=84=E7=B1=BB?=
+ =?UTF-8?q?=E5=9E=8B?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ alps/packages/apps/Bluetooth/AndroidManifest.xml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/alps/packages/apps/Bluetooth/AndroidManifest.xml b/alps/packages/apps/Bluetooth/AndroidManifest.xml
+index 3558c68..962212e 100644
+--- a/alps/packages/apps/Bluetooth/AndroidManifest.xml
++++ b/alps/packages/apps/Bluetooth/AndroidManifest.xml
+@@ -169,7 +169,9 @@
+                 <data android:mimeType="text/x-vcalendar" />
+                 <data android:mimeType="application/ogg" />
+                 <data android:mimeType="application/mspowerpoint" />
++		<data android:mimeType="application/vnd.android.package-archive" />
+             </intent-filter>
++            <!--@darren 20150716 allow share apk throught BT:<data android:mimeType="application/vnd.android.package-archive" />-->
+             <intent-filter>
+                 <action android:name="android.intent.action.SEND_MULTIPLE" />
+                 <category android:name="android.intent.category.DEFAULT" />
+@@ -190,6 +192,7 @@
+                 <data android:mimeType="application/pdf" />
+                 <data android:mimeType="application/ogg" />
+                 <data android:mimeType="application/mspowerpoint" />
++		<data android:mimeType="application/vnd.android.package-archive" />
+             </intent-filter>
+             <intent-filter>
+                 <action android:name="android.btopp.intent.action.OPEN" />
+-- 
+2.3.7
+

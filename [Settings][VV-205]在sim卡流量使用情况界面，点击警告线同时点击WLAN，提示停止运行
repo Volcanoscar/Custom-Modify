@@ -1,0 +1,40 @@
+From 590a6808e43a2ccebfb71a152c43141bd095e3d3 Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Wed, 18 May 2016 17:20:38 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][Settings][VV-205]=E5=9C=A8?=
+ =?UTF-8?q?sim=E5=8D=A1=E6=B5=81=E9=87=8F=E4=BD=BF=E7=94=A8=E6=83=85?=
+ =?UTF-8?q?=E5=86=B5=E7=95=8C=E9=9D=A2=EF=BC=8C=E7=82=B9=E5=87=BB=E8=AD=A6?=
+ =?UTF-8?q?=E5=91=8A=E7=BA=BF=E5=90=8C=E6=97=B6=E7=82=B9=E5=87=BBWLAN?=
+ =?UTF-8?q?=EF=BC=8C=E6=8F=90=E7=A4=BA=E5=81=9C=E6=AD=A2=E8=BF=90=E8=A1=8C?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../Settings/src/com/android/settings/net/NetworkPolicyEditor.java | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+ mode change 100644 => 100755 alps/packages/apps/Settings/src/com/android/settings/net/NetworkPolicyEditor.java
+
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/net/NetworkPolicyEditor.java b/alps/packages/apps/Settings/src/com/android/settings/net/NetworkPolicyEditor.java
+old mode 100644
+new mode 100755
+index 1268c3f..8efd12c
+--- a/alps/packages/apps/Settings/src/com/android/settings/net/NetworkPolicyEditor.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/net/NetworkPolicyEditor.java
+@@ -88,7 +88,12 @@ public class NetworkPolicyEditor {
+     }
+ 
+     public void write(NetworkPolicy[] policies) {
+-        mPolicyManager.setNetworkPolicies(policies);
++        /* zouguanbo 20160518 modify begin for Jria VV-205 catch exception */
++        try{
++        		mPolicyManager.setNetworkPolicies(policies);
++        }catch(Exception e){
++        }
++        /* zouguanbo 20160518 modify end for Jria VV-205 catch exception */
+     }
+ 
+     public boolean hasLimitedPolicy(NetworkTemplate template) {
+-- 
+2.3.7
+

@@ -1,0 +1,29 @@
+From 8ebb613730b5da164b26570244d1e49ccea63535 Mon Sep 17 00:00:00 2001
+From: liangjianqiu <liangjianqiu@hkzechin.com>
+Date: Mon, 20 Jul 2015 16:44:46 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][Bluetooth][LM-111]?=
+ =?UTF-8?q?=E8=93=9D=E7=89=99=E6=97=A0=E6=B3=95=E6=8E=A5=E6=94=B6=E6=97=A5?=
+ =?UTF-8?q?=E5=8E=86=E4=BA=8B=E4=BB=B6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/alps/packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java b/alps/packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java
+index 3b34046..df280cd 100755
+--- a/alps/packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java
++++ b/alps/packages/apps/Bluetooth/src/com/android/bluetooth/opp/Constants.java
+@@ -223,6 +223,7 @@ public class Constants {
+         "text/plain",
+         "text/html",
+         "text/xml",
++        "text/x-vcalendar",//jianqiu add 20150720 because can not receive calendar event
+         "application/zip",
+         "application/vnd.ms-excel",
+         "application/msword",
+-- 
+2.3.7
+

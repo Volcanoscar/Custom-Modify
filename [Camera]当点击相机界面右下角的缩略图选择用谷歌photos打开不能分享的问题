@@ -1,0 +1,34 @@
+From a15946f88c31f2180276067a921fd2d354e818df Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Mon, 20 Jun 2016 14:11:41 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][Camera]=E5=BD=93=E7=82=B9?=
+ =?UTF-8?q?=E5=87=BB=E7=9B=B8=E6=9C=BA=E7=95=8C=E9=9D=A2=E5=8F=B3=E4=B8=8B?=
+ =?UTF-8?q?=E8=A7=92=E7=9A=84=E7=BC=A9=E7=95=A5=E5=9B=BE=E9=80=89=E6=8B=A9?=
+ =?UTF-8?q?=E7=94=A8=E8=B0=B7=E6=AD=8Cphotos=E6=89=93=E5=BC=80=E4=B8=8D?=
+ =?UTF-8?q?=E8=83=BD=E5=88=86=E4=BA=AB=E7=9A=84=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../Camera/src/com/android/camera/manager/ThumbnailViewManager.java   | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/alps/vendor/mediatek/proprietary/packages/apps/Camera/src/com/android/camera/manager/ThumbnailViewManager.java b/alps/vendor/mediatek/proprietary/packages/apps/Camera/src/com/android/camera/manager/ThumbnailViewManager.java
+index f2eaab9..96b9ef0 100755
+--- a/alps/vendor/mediatek/proprietary/packages/apps/Camera/src/com/android/camera/manager/ThumbnailViewManager.java
++++ b/alps/vendor/mediatek/proprietary/packages/apps/Camera/src/com/android/camera/manager/ThumbnailViewManager.java
+@@ -266,7 +266,9 @@ public class ThumbnailViewManager extends ViewManager implements OnClickListener
+         if (mCurrentSaveRequest != null && mCurrentSaveRequest.getUri() != null) {
+             return mCurrentSaveRequest.getUri();
+         } else {
+-            return Uri.parse("file://" + mThumbnail.getFilePath());
++            /* zouguanbo 20160620 modify for when click thunmbnail google photos can't share it */
++            //return Uri.parse("file://" + mThumbnail.getFilePath());
++            return mThumbnail.getUri();
+         }
+     }
+ 
+-- 
+2.3.7
+

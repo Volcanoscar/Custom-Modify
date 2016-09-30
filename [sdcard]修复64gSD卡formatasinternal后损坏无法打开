@@ -1,0 +1,31 @@
+From fa65833c4996332dc3851a22b84621d56844201d Mon Sep 17 00:00:00 2001
+From: tianyunfei <tianyunfei@hkzechin.com>
+Date: Thu, 16 Jun 2016 15:50:23 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B06][sdcard]=E4=BF=AE=E5=A4=8D?=
+ =?UTF-8?q?64g=20SD=E5=8D=A1format=20as=20internal=E5=90=8E=E6=8D=9F?=
+ =?UTF-8?q?=E5=9D=8F=E6=97=A0=E6=B3=95=E6=89=93=E5=BC=80?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../base/services/core/java/com/android/server/MountService.java       | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/alps/frameworks/base/services/core/java/com/android/server/MountService.java b/alps/frameworks/base/services/core/java/com/android/server/MountService.java
+index f5b7041..c6c7464 100644
+--- a/alps/frameworks/base/services/core/java/com/android/server/MountService.java
++++ b/alps/frameworks/base/services/core/java/com/android/server/MountService.java
+@@ -1942,7 +1942,8 @@ class MountService extends IMountService.Stub
+         final CountDownLatch latch = findOrCreateDiskScanLatch(diskId);
+         try {
+             mConnector.execute("volume", "partition", diskId, "private");
+-            waitForLatch(latch, "partitionPrivate", 3 * DateUtils.MINUTE_IN_MILLIS);
++            //waitForLatch(latch, "partitionPrivate", 3 * DateUtils.MINUTE_IN_MILLIS);
++            waitForLatch(latch, "partitionPrivate", 10 * DateUtils.MINUTE_IN_MILLIS);//tianyunfei modify for wait 10min when format 64g sd card       
+         } catch (NativeDaemonConnectorException e) {
+             Slog.i(TAG, "partitionPrivate NativeDaemonConnectorException, e=" + e.getMessage());
+             popFormatFailToast();
+-- 
+2.3.7
+

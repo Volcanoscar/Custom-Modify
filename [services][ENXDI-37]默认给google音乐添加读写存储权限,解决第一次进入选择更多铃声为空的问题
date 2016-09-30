@@ -1,0 +1,48 @@
+From 08877b48a0110f65846f230a7ca454e4cd22025d Mon Sep 17 00:00:00 2001
+From: zouguanbo <zouguanbo@hkzechin.com>
+Date: Mon, 6 Jun 2016 16:14:46 +0800
+Subject: [PATCH] =?UTF-8?q?[=E5=B9=B3=E5=8F=B0][services][ENXDI-37]?=
+ =?UTF-8?q?=E9=BB=98=E8=AE=A4=E7=BB=99google=E9=9F=B3=E4=B9=90=E6=B7=BB?=
+ =?UTF-8?q?=E5=8A=A0=E8=AF=BB=E5=86=99=E5=AD=98=E5=82=A8=E6=9D=83=E9=99=90?=
+ =?UTF-8?q?,=E8=A7=A3=E5=86=B3=E7=AC=AC=E4=B8=80=E6=AC=A1=E8=BF=9B?=
+ =?UTF-8?q?=E5=85=A5=E9=80=89=E6=8B=A9=E6=9B=B4=E5=A4=9A=E9=93=83=E5=A3=B0?=
+ =?UTF-8?q?=E4=B8=BA=E7=A9=BA=E7=9A=84=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../android/server/pm/DefaultPermissionGrantPolicy.java    | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+ mode change 100644 => 100755 alps/frameworks/base/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java
+
+diff --git a/alps/frameworks/base/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java b/alps/frameworks/base/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java
+old mode 100644
+new mode 100755
+index d3dd7a0..01c3d5f
+--- a/alps/frameworks/base/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java
++++ b/alps/frameworks/base/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java
+@@ -598,6 +598,20 @@ final class DefaultPermissionGrantPolicy {
+                     && doesPackageSupportRuntimePermissions(musicPackage)) {
+                 grantRuntimePermissionsLPw(musicPackage, STORAGE_PERMISSIONS, userId);
+             }
++            /* zouguanbo add begin for Jria ENXID-37 add storage permissions for google music  */
++            PackageManager pm = mService.mContext.getPackageManager();
++            List<ApplicationInfo> applicationInfoList = pm.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
++            for(ApplicationInfo app : applicationInfoList){
++            		PackageParser.Package pkgName = getSystemPackageLPr(app.packageName);
++            		if("com.google.android.music".equals(app.packageName)&& doesPackageSupportRuntimePermissions(pkgName)){
++            				try{
++            						grantRuntimePermissionsLPw(pkgName,STORAGE_PERMISSIONS,userId);
++            				}catch(Exception e){
++            						e.printStackTrace();
++            				}
++            		}
++            }
++            /* zouguanbo add end for Jria ENXID-37 add storage permissions for google music  */
+ 
+             mService.mSettings.onDefaultRuntimePermissionsGrantedLPr(userId);
+         }
+-- 
+2.3.7
+
